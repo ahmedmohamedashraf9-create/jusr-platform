@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const serviceForm = document.getElementById("requestForm");
     const serviceSelect = document.getElementById("serviceType");
     const serviceGrid = document.getElementById("serviceGrid");
@@ -12,7 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const heroStartBtn = document.getElementById("heroStartBtn");
     const navRequestBtn = document.getElementById("navRequestBtn");
 
-    // 1. القائمة الكاملة للـ 14 خدمة الأصلية لمنصة جسر
+    // 🔗 رابط جوجل شيت السحابي الخاص بك (مربوط وجاهز):
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8Eurs4yZOPws9YLHEIPWmEpYZ_vKyL7Wa7Q2XduMR7EkFKmI_Au7L06hYmoofbtlhuA/exec";
+
+    // القائمة الكاملة للـ 14 خدمة الأصلية لمنصة جسر
     const allServices = [
         { id: "study", category: "education", icon: "🎓", sortOrder: 1, titleAr: "القبول الجامعي والدراسة", titleRu: "Учёба", descAr: "تأمين القبولات والمنح والسنة التحضيرية بالجامعات الروسية والمصرية المعتمدة.", descRu: "Поступление." },
         { id: "housing", category: "living", icon: "🏠", sortOrder: 2, titleAr: "السكن الطلابي والمعيشة", titleRu: "Жилье", descAr: "توفير السكن الجامعي أو الخاص وترتيب استقبال المطار والإقامة.", descRu: "Общежитие." },
@@ -30,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { id: "other", category: "general", icon: "🤝", sortOrder: 14, titleAr: "خدمات الاستشارات العامة والأخرى", titleRu: "Другие", descAr: "استشارات مخصصة وحلول استفسارات التنقل والخدمات الخاصة.", descRu: "Общие." }
     ];
 
-    // جلب الطلبات المحفوظة في المتصفح
+    // جلب الطلبات المحفوظة مؤقتاً
     let adminRequestsList = JSON.parse(localStorage.getItem("jusr_requests") || "[]");
 
     function saveRequests() {
@@ -50,6 +53,23 @@ document.addEventListener("DOMContentLoaded", () => {
     function getServiceTitle(serviceId) {
         const found = allServices.find(s => s.id === serviceId);
         return found ? found.titleAr : serviceId;
+    }
+
+    // دالة جلب أحدث الطلبات من جوجل شيت سحابياً
+    async function syncFromGoogleSheets() {
+        try {
+            const res = await fetch(GOOGLE_SCRIPT_URL + "?t=" + Date.now());
+            if (res.ok) {
+                const cloudData = await res.json();
+                if (Array.isArray(cloudData)) {
+                    adminRequestsList = cloudData;
+                    saveRequests();
+                    refreshCounters();
+                }
+            }
+        } catch (err) {
+            console.warn("جاري العمل بالذاكرة المحلية مؤقتاً:", err);
+        }
     }
 
     // تحديث العدادات في الموقع من الخارج وفي لوحة الإدارة في نفس اللحظة
@@ -134,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     refreshCounters();
+    await syncFromGoogleSheets();
 
     window.selectServiceForRequest = function(serviceId) {
         if (serviceSelect) {
@@ -145,10 +166,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // 2. إرسال طلب جديد بنفس صيغة الترقيم الأصلية (MR-xxxxxx)
+    // 2. إرسال طلب جديد وحفظه في Google Sheets وفي اللحظة يظهر على كل الأجهزة
     if (serviceForm) {
-        serviceForm.addEventListener("submit", (e) => {
+        serviceForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+
+            const submitBtn = serviceForm.querySelector("button[type='submit']");
+            const oldBtnText = submitBtn ? submitBtn.textContent : "";
 
             const formData = {
                 name: document.getElementById("customerName").value.trim(),
@@ -161,6 +185,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!formData.service) {
                 alert("❌ برجاء اختيار الخدمة المطلوبة.");
                 return;
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = "⏳ جاري إرسال الطلب للسحابة...";
             }
 
             const newOrderId = "MR-" + Date.now().toString().slice(-6);
@@ -180,6 +209,23 @@ document.addEventListener("DOMContentLoaded", () => {
             adminRequestsList.unshift(newRequest);
             saveRequests();
             refreshCounters();
+
+            // الإرسال الفوري لـ Google Sheets
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(newRequest)
+                });
+            } catch (err) {
+                console.error("خطأ في الإرسال للسحابة:", err);
+            }
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = oldBtnText;
+            }
+
             serviceForm.reset();
 
             if (successModal) {
@@ -194,16 +240,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 3. تتبع الطلب
+    // 3. تتبع الطلب من السحابة مباشرة
     if (trackForm && trackInput) {
-        trackForm.addEventListener("submit", (e) => {
+        trackForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const orderId = trackInput.value.trim().toUpperCase();
             if (!orderId) return;
 
-            const found = adminRequestsList.find(r => r.id.toUpperCase() === orderId);
             trackResult.classList.remove("hidden");
             trackResult.style.display = "block";
+            trackResult.innerHTML = "⏳ جاري البحث عن حالة الطلب...";
+
+            await syncFromGoogleSheets();
+
+            const found = adminRequestsList.find(r => String(r.id).toUpperCase() === orderId);
 
             if (found) {
                 trackResult.innerHTML = `📋 حالة الطلب <b>${found.id}</b>: <span class="status-badge status-${found.status}">${getStatusLabel(found.status)}</span><br><b>الاسم:</b> ${found.customerName}<br><b>الخدمة:</b> ${getServiceTitle(found.serviceId)}<br><b>التاريخ:</b> ${found.createdAt}`;
@@ -213,25 +263,51 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 4. فتح لوحة الإدارة بكلمة المرور
-    if (adminNav) {
-        adminNav.addEventListener("click", (e) => {
-            e.preventDefault();
-            const passcode = prompt("🔐 لوحة الإدارة محمية.\nأدخل كلمة مرور المدير للوصول:");
-            const adminSecret = "Qwe321Hgyi#%÷/][%^&*£#="; 
-
-            if (passcode === adminSecret) {
-                if (publicView) publicView.style.display = "none";
-                if (adminSection) {
-                    adminSection.classList.add("active");
-                    adminSection.style.display = "block";
-                    loadAdminRequests();
-                }
-            } else if (passcode !== null) {
-                alert("❌ كلمة المرور غير صحيحة! هذه اللوحة مخصصة لمدير المنصة فقط.");
+    // 4. تفعيل قائمة الموبايل + فتح لوحة الإدارة من أي جهاز (موبايل أو لابتوب)
+    const menuToggle = document.querySelector(".menu-toggle, #menuToggle, .nav-toggle, button[aria-label*='menu']");
+    const navLinks = document.querySelector(".nav-links, #navLinks, nav ul, .navbar-menu");
+    if (menuToggle && navLinks) {
+        menuToggle.addEventListener("click", () => {
+            navLinks.classList.toggle("active");
+            navLinks.classList.toggle("show");
+            if (navLinks.style.display === "flex" || navLinks.style.display === "block") {
+                navLinks.style.display = "";
+            } else {
+                navLinks.style.display = "flex";
+                navLinks.style.flexDirection = "column";
             }
         });
     }
+
+    function triggerAdminLogin(e) {
+        if (e) e.preventDefault();
+        const passcode = prompt("🔐 لوحة الإدارة محمية.\nأدخل كلمة مرور المدير للوصول:");
+        const adminSecret = "Qwe321Hgyi#%÷/][%^&*£#="; 
+
+        if (passcode === adminSecret) {
+            if (publicView) publicView.style.display = "none";
+            if (adminSection) {
+                adminSection.classList.add("active");
+                adminSection.style.display = "block";
+                window.scrollTo(0, 0);
+                loadAdminRequests();
+            }
+        } else if (passcode !== null) {
+            alert("❌ كلمة المرور غير صحيحة! هذه اللوحة مخصصة لمدير المنصة فقط.");
+        }
+    }
+
+    // ربط أزرار الإدارة الأصلية
+    document.querySelectorAll("#adminNav, a[href='#admin'], .admin-link").forEach(btn => {
+        btn.addEventListener("click", triggerAdminLogin);
+    });
+
+    // إضافة زر عائم للإدارة خاص بالموبايل يضمن ظهورها في أي وقت
+    const mobileAdminBtn = document.createElement("button");
+    mobileAdminBtn.innerHTML = "🔐 الإدارة";
+    mobileAdminBtn.style.cssText = "position:fixed; bottom:18px; left:18px; z-index:9999; background:#0f2942; color:#fff; border:none; border-radius:50px; padding:10px 16px; font-family:inherit; font-size:13px; font-weight:bold; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;";
+    mobileAdminBtn.addEventListener("click", triggerAdminLogin);
+    document.body.appendChild(mobileAdminBtn);
 
     if (backPublicBtn) {
         backPublicBtn.addEventListener("click", () => {
@@ -244,12 +320,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 5. تحميل وعرض الطلبات في لوحة الإدارة
-    window.loadAdminRequests = function() {
+    // 5. تحميل وعرض الطلبات في لوحة الإدارة من Google Sheets
+    window.loadAdminRequests = async function() {
         const requestList = document.getElementById("requestList");
         if (!requestList) return;
 
-        adminRequestsList = JSON.parse(localStorage.getItem("jusr_requests") || "[]");
+        requestList.innerHTML = "<p style='text-align:center; padding: 25px; font-weight:bold;'>⏳ جاري جلب الطلبات من السحابة...</p>";
+
+        await syncFromGoogleSheets();
+
         requestList.innerHTML = "";
         refreshCounters();
 
@@ -259,12 +338,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         adminRequestsList.forEach(req => {
+            const cleanPhone = String(req.customerPhone || "").replace(/[^0-9]/g, "");
             const item = document.createElement("div");
             item.className = "request-item";
             item.innerHTML = `
                 <div>
                     <h4>رقم الطلب: ${req.id} <span id="badge-${req.id}" class="status-badge status-${req.status}">${getStatusLabel(req.status)}</span></h4>
-                    <p><b>الاسم:</b> ${req.customerName} | <b>الهاتف:</b> ${req.customerPhone}</p>
+                    <p><b>الاسم:</b> ${req.customerName} | <b>الهاتف:</b> <a href="https://wa.me/${cleanPhone}" target="_blank" style="color:#0d9488;font-weight:bold;text-decoration:none;">${req.customerPhone} 💬 واتساب</a></p>
                     <p><b>الخدمة:</b> ${getServiceTitle(req.serviceId)} | <b>الاتجاه:</b> ${req.direction}</p>
                     <p><b>التفاصيل:</b> ${req.details || "لا توجد تفاصيل إضافية"}</p>
                     <p style="font-size: 11.5px; color: #888;">تاريخ الإرسال: ${req.createdAt}</p>
@@ -282,9 +362,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // 6. تحديث حالة الطلب والعدادات فوراً
-    window.updateRequestStatus = function(id, newStatus) {
-        const targetReq = adminRequestsList.find(r => r.id === id);
+    // 6. تحديث حالة الطلب في لوحة الإدارة وفي جوجل شيت فوراً
+    window.updateRequestStatus = async function(id, newStatus) {
+        const targetReq = adminRequestsList.find(r => String(r.id) === String(id));
         if (targetReq) {
             targetReq.status = newStatus;
             saveRequests();
@@ -294,6 +374,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 badge.textContent = getStatusLabel(newStatus);
                 badge.className = `status-badge status-${newStatus}`;
             }
+        }
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "updateStatus", id: id, status: newStatus })
+            });
+        } catch (err) {
+            console.error("خطأ في تحديث الحالة على السحابة:", err);
         }
     };
 });
