@@ -12,54 +12,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const heroStartBtn = document.getElementById("heroStartBtn");
     const navRequestBtn = document.getElementById("navRequestBtn");
 
-    // 1. قائمة الخدمات الأساسية لمنصة جسر (ثابتة وجاهزة للعمل دائماً بدون سيرفر)
+    // 1. القائمة الكاملة للـ 14 خدمة الأصلية لمنصة جسر
     const allServices = [
-        {
-            id: "study-admissions",
-            icon: "🎓",
-            titleAr: "القبولات الجامعية والمنح الدراسية",
-            descAr: "تأمين القبولات في الجامعات الروسية والمصرية، التقديم على المنح، ومعادلة الشهادات."
-        },
-        {
-            id: "visa-invitations",
-            icon: "🛂",
-            titleAr: "الدعوات وتخليص التأشيرات",
-            descAr: "استخراج الدعوات الدراسية والسياحية وتجارية وتسهيل إجراءات التأشيرة بين مصر وروسيا."
-        },
-        {
-            id: "translation-attestation",
-            icon: "📄",
-            titleAr: "الترجمة المعتمدة وتوثيق الأوراق",
-            descAr: "ترجمة وتوثيق كافة المستندات الرسمية والشهادات في القنصليات ووزارات الخارجية."
-        },
-        {
-            id: "flights-housing",
-            icon: "✈️",
-            titleAr: "حجز الطيران وتوفير السكن",
-            descAr: "حجوزات طيران بأسعار مناسبة، استقبال في المطار، وتوفير سكن جامعي أو خاص آمن."
-        },
-        {
-            id: "money-transfer",
-            icon: "💳",
-            titleAr: "الخدمات المالية والتحويلات",
-            descAr: "مساعدة الطلاب والمسافرين في سداد الرسوم الدراسية وتنسيق التحويلات والخدمات البنكية."
-        },
-        {
-            id: "shipping-documents",
-            icon: "📦",
-            titleAr: "شحن الأوراق والمستلزمات",
-            descAr: "إرسال واستقبال المستندات الأصلية والطرود الشخصية بسرعة وأمان في الاتجاهين."
-        }
+        { id: "study", category: "education", icon: "🎓", sortOrder: 1, titleAr: "القبول الجامعي والدراسة", titleRu: "Учёба", descAr: "تأمين القبولات والمنح والسنة التحضيرية بالجامعات الروسية والمصرية المعتمدة.", descRu: "Поступление." },
+        { id: "housing", category: "living", icon: "🏠", sortOrder: 2, titleAr: "السكن الطلابي والمعيشة", titleRu: "Жилье", descAr: "توفير السكن الجامعي أو الخاص وترتيب استقبال المطار والإقامة.", descRu: "Общежитие." },
+        { id: "equivalence", category: "education", icon: "📜", sortOrder: 3, titleAr: "معادلة الشهادات والدبلومات", titleRu: "Нострификация", descAr: "إجراءات توثيق ومعادلة الشهادات الدراسية بين البلدين.", descRu: "Диплом." },
+        { id: "language", category: "education", icon: "🗣️", sortOrder: 4, titleAr: "دورات اللغة (روسي / عربي)", titleRu: "Языковые курсы", descAr: "كورسات مكثفة لتأهيل الطلاب والمغتربين لغويًا.", descRu: "Язык." },
+        { id: "flights", category: "travel", icon: "✈️", sortOrder: 5, titleAr: "تذاكر الطيران والترانزيت", titleRu: "Авиабилеты", descAr: "حجز أفضل خطوط الطيران بين المطارات المصرية والروسية.", descRu: "Билеты." },
+        { id: "visa", category: "travel", icon: "🛂", sortOrder: 6, titleAr: "تأشيرات الدخول والدعوات", titleRu: "Визы", descAr: "استخراج الدعوات الرسمية وتخليص إجراءات التأشيرات.", descRu: "Виза." },
+        { id: "tourism", category: "travel", icon: "🏛️", sortOrder: 7, titleAr: "البرامج السياحية والثقافية", titleRu: "Туризм", descAr: "رحلات سياحية وبرامج استكشافية بين موسكو، القاهرة، وباقي المدن.", descRu: "Туризм." },
+        { id: "legal", category: "business", icon: "⚖️", sortOrder: 8, titleAr: "الاستشارات القانونية والتوثيق", titleRu: "Юристы", descAr: "توثيق العقود والترجمة المعتمدة والتخليص القانوني.", descRu: "Юрист." },
+        { id: "translation", category: "business", icon: "📝", sortOrder: 9, titleAr: "الترجمة المعتمدة للمستندات", titleRu: "Перевод", descAr: "ترجمة رسمية معتمدة للسفارات والجهات الحكومية.", descRu: "Перевод." },
+        { id: "trade", category: "business", icon: "💼", sortOrder: 10, titleAr: "تأسيس الشركات والأعمال التجارية", titleRu: "Бизнес", descAr: "استشارات الاستثمار وتأسيس الشركات وربط الأسواق.", descRu: "Бизнес." },
+        { id: "money", category: "general", icon: "💳", sortOrder: 11, titleAr: "استشارات تحويل الأموال والقنوات الرسمية", titleRu: "Переводы", descAr: "توضيح القنوات الرسمية والآمنة للتحويل المالي بين البلدين.", descRu: "Финансы." },
+        { id: "health", category: "general", icon: "🏥", sortOrder: 12, titleAr: "التأمين الصحي والرعاية الطبية", titleRu: "Медицина", descAr: "ترتيب التأمين الصحي الشخصي والمتابعة الطبية للطلاب.", descRu: "Медицина." },
+        { id: "shipping", category: "general", icon: "📦", sortOrder: 13, titleAr: "الشحن الدولي السريع", titleRu: "Доставка", descAr: "خدمات شحن الطرود والأوراق الشخصية والتجارية.", descRu: "Доставка." },
+        { id: "other", category: "general", icon: "🤝", sortOrder: 14, titleAr: "خدمات الاستشارات العامة والأخرى", titleRu: "Другие", descAr: "استشارات مخصصة وحلول استفسارات التنقل والخدمات الخاصة.", descRu: "Общие." }
     ];
 
-    // جلب الطلبات المحفوظة أو إنشاء مصفوفة فارغة
+    // جلب الطلبات المحفوظة في المتصفح
     let adminRequestsList = JSON.parse(localStorage.getItem("jusr_requests") || "[]");
 
     function saveRequests() {
         localStorage.setItem("jusr_requests", JSON.stringify(adminRequestsList));
     }
 
-    // ترجمة حالة الطلب للعرض بشكل أنيق
     function getStatusLabel(status) {
         const labels = {
             'new': 'جديد',
@@ -70,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return labels[status] || status;
     }
 
-    // الحصول على اسم الخدمة بالعربي من الكود الخاص بها
     function getServiceTitle(serviceId) {
         const found = allServices.find(s => s.id === serviceId);
         return found ? found.titleAr : serviceId;
@@ -122,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // تهيئة وعرض الخدمات في القائمة المنسدلة وفي الشبكة الرئيسية
+    // تهيئة القائمة المنسدلة للخدمات
     if (serviceSelect) {
         serviceSelect.innerHTML = '<option value="" disabled selected>اختر الخدمة المطلوبة</option>';
         allServices.forEach(s => {
@@ -133,17 +109,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (serviceGrid) {
-        renderServices(allServices);
-    }
+    // عرض الـ 14 خدمة في الشبكة الرئيسية
+    let targetGrid = document.getElementById("serviceGrid") 
+                  || document.getElementById("servicesGrid") 
+                  || document.querySelector(".service-grid") 
+                  || document.querySelector(".services-grid");
 
-    refreshCounters();
-
-    function renderServices(servicesToRender) {
-        if (!serviceGrid) return;
-        serviceGrid.innerHTML = "";
-        
-        servicesToRender.forEach(s => {
+    if (targetGrid) {
+        targetGrid.innerHTML = "";
+        allServices.forEach(s => {
             const card = document.createElement("div");
             card.className = "service";
             card.innerHTML = `
@@ -155,9 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p>${s.descAr}</p>
                 <button class="btn btn-outline" type="button" onclick="selectServiceForRequest('${s.id}')">اطلب هذه الخدمة</button>
             `;
-            serviceGrid.appendChild(card);
+            targetGrid.appendChild(card);
         });
     }
+
+    refreshCounters();
 
     window.selectServiceForRequest = function(serviceId) {
         if (serviceSelect) {
@@ -169,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // 2. إرسال طلب جديد + إظهار الصندوق المنبثق برقم الطلب للنسخ + تحديث العدادات
+    // 2. إرسال طلب جديد بنفس صيغة الترقيم الأصلية (MR-xxxxxx)
     if (serviceForm) {
         serviceForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -187,9 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // توليد رقم مرجعي مميز للطلب
-            const randomNum = Math.floor(100000 + Math.random() * 900000);
-            const newOrderId = `JSR-${randomNum}`;
+            const newOrderId = "MR-" + Date.now().toString().slice(-6);
             const nowStr = new Date().toLocaleString('ar-EG');
 
             const newRequest = {
@@ -197,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 customerName: formData.name,
                 customerPhone: formData.phone,
                 serviceId: formData.service,
-                direction: formData.direction,
+                direction: formData.direction || "other",
                 details: formData.details,
                 status: 'new',
                 createdAt: nowStr
@@ -208,7 +182,6 @@ document.addEventListener("DOMContentLoaded", () => {
             refreshCounters();
             serviceForm.reset();
 
-            // إظهار صندوق نجاح الطلب مع رقم الطلب القابل للنسخ
             if (successModal) {
                 const modalOrderId = document.getElementById("modalOrderId");
                 if (modalOrderId) {
@@ -216,12 +189,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 successModal.style.display = "flex";
             } else {
-                alert(`✅ تم إرسال طلبك بنجاح!\nرقم الطلب للمتابعة: ${newOrderId}`);
+                alert(`✅ تم إرسال الطلب بنجاح!\nرقم الطلب: ${newOrderId}`);
             }
         });
     }
 
-    // 3. تتبع الطلب بالرقم المرجعي
+    // 3. تتبع الطلب
     if (trackForm && trackInput) {
         trackForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -233,14 +206,9 @@ document.addEventListener("DOMContentLoaded", () => {
             trackResult.style.display = "block";
 
             if (found) {
-                trackResult.innerHTML = `
-                    📋 حالة الطلب <b>${found.id}</b>: <span class="status-badge status-${found.status}">${getStatusLabel(found.status)}</span><br>
-                    <b>الاسم:</b> ${found.customerName}<br>
-                    <b>الخدمة:</b> ${getServiceTitle(found.serviceId)}<br>
-                    <b>التاريخ:</b> ${found.createdAt}
-                `;
+                trackResult.innerHTML = `📋 حالة الطلب <b>${found.id}</b>: <span class="status-badge status-${found.status}">${getStatusLabel(found.status)}</span><br><b>الاسم:</b> ${found.customerName}<br><b>الخدمة:</b> ${getServiceTitle(found.serviceId)}<br><b>التاريخ:</b> ${found.createdAt}`;
             } else {
-                trackResult.innerHTML = `<span style="color:red; font-weight:bold;">❌ الطلب غير موجود، تأكد من كتابة الرمز المرجعي بشكل صحيح (مثال: JSR-123456).</span>`;
+                trackResult.innerHTML = `<span style="color:red; font-weight:bold;">❌ الطلب غير موجود</span>`;
             }
         });
     }
@@ -276,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 5. تحميل وعرض الطلبات والعدادات في لوحة الإدارة
+    // 5. تحميل وعرض الطلبات في لوحة الإدارة
     window.loadAdminRequests = function() {
         const requestList = document.getElementById("requestList");
         if (!requestList) return;
@@ -314,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // 6. دالة تحديث حالة الطلب والعدادات فوراً
+    // 6. تحديث حالة الطلب والعدادات فوراً
     window.updateRequestStatus = function(id, newStatus) {
         const targetReq = adminRequestsList.find(r => r.id === id);
         if (targetReq) {
