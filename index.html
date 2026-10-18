@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123b56">
+  <title>جسر | خدمات مصر وروسيا</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- الشريط العلوي -->
+  <div class="topbar">
+    <span id="topMessage" data-i18n="topMessage">منصة خدمات تربط مصر وروسيا — اطلب خدمتك بسهولة</span>
+    <button class="lang-btn" id="langToggle" type="button">Русский</button>
+  </div>
+
+  <!-- الهيدر وشريط التنقل المتجاوب -->
+  <header>
+    <nav class="nav">
+      <div class="brand">
+        <div class="logo">ج</div>
+        <div>
+          <span id="brandName" data-i18n="brandTitle">جسر</span>
+          <small id="brandSub" data-i18n="brandSub"> | خدمات مصر وروسيا</small>
+        </div>
+      </div>
+
+      <!-- زر القائمة للموبايل -->
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="القائمة">☰</button>
+
+      <div class="navlinks" id="navLinks">
+        <a href="#services" data-i18n="navServices">الخدمات</a>
+        <a href="#request" data-i18n="navRequest">اطلب خدمة</a>
+        <a href="#track" data-i18n="navTrack">متابعة طلب</a>
+        <a href="#admin" id="adminNav" data-i18n="navAdmin">لوحة الإدارة</a>
+        <button class="btn btn-primary nav-cta" id="navRequestBtn" data-i18n="requestBtn">اطلب خدمة</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- الواجهة العامة للعملاء -->
+  <main id="publicView">
+    <!-- القسم الرئيسي (Hero) -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span>✦</span><span data-i18n="eyebrow">خدمات بين مصر وروسيا وفي الاتجاهين</span></div>
+          <h1 data-i18n="heroTitle">مشوارك بين مصر وروسيا،<br>أسهل وأوضح معانا.</h1>
+          <p data-i18n="heroDesc">من الدراسة والمنح وتخليص الأوراق إلى فرص العمل وحجز الطيران والسكن — أرسل طلبك وتابعه خطوة بخطوة مع فريقنا.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="heroStartBtn" data-i18n="startRequest">ابدأ طلبك الآن ←</button>
+            <a class="btn btn-light" href="#services" data-i18n="browseServices">استعرض الخدمات الأساسية</a>
+            <a class="btn btn-light" href="#track" data-i18n="trackOrderBtn">تابع حالة طلبك</a>
+          </div>
+        </div>
+        <div class="hero-art" aria-label="مصر وروسيا">
+          <div class="route">
+            <div class="country">🇪🇬<small data-i18n="egypt">مصر</small></div>
+            <div class="route-line"></div>
+            <div class="country">🇷🇺<small data-i18n="russia">روسيا</small></div>
+          </div>
+          <div class="hero-note" data-i18n="heroNote">خدمة واضحة • متابعة بالرقم المرجعي • تواصل مباشر</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- مميزات المنصة -->
+    <div class="container trust-row">
+      <div class="trust">
+        <div class="trust-icon">🧭</div>
+        <div><b data-i18n="trust1">خطوات وشروط واضحة</b><small data-i18n="trust1d">نوضح لك المتطلبات والإجراءات قبل البدء</small></div>
+      </div>
+      <div class="trust">
+        <div class="trust-icon">📋</div>
+        <div><b data-i18n="trust2">متابعة فورية للطلب</b><small data-i18n="trust2d">رقم مرجعي خاص لمتابعة حالة طلبك</small></div>
+      </div>
+      <div class="trust">
+        <div class="trust-icon">🌐</div>
+        <div><b data-i18n="trust3">دعم عربي وروسـي</b><small data-i18n="trust3d">تواصل وخدمة باللغة المفضلة لك</small></div>
+      </div>
+    </div>
+
+    <!-- قسم إحصائيات المنصة للزوار (مربوط مباشرة بلوحة الإدارة) -->
+    <section class="public-stats-section" style="max-width: 1100px; margin: 28px auto; padding: 0 20px;">
+      <div style="text-align: center; margin-bottom: 18px;">
+        <h3 style="margin: 0; color: #1e293b; font-size: 1.35rem;">📊 مؤشرات إنجاز الطلبات عبر منصة جسر</h3>
+        <p style="margin: 5px 0 0; color: #64748b; font-size: 0.92rem;">تحديث مباشر لحركة الطلبات والخدمات بين مصر وروسيا لحظة بلحظة</p>
+      </div>
+      <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div class="stat-card" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #0f172a;">
+          <span style="color: #64748b; font-size: 0.9rem; font-weight: 600;">إجمالي الطلبات</span>
+          <h2 id="publicStatAll" class="js-stat-all" style="margin: 10px 0 0; font-size: 2.2rem; color: #0f172a;">0</h2>
+        </div>
+        <div class="stat-card" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #3b82f6;">
+          <span style="color: #64748b; font-size: 0.9rem; font-weight: 600;">طلبات جديدة</span>
+          <h2 id="publicStatNew" class="js-stat-new" style="margin: 10px 0 0; font-size: 2.2rem; color: #3b82f6;">0</h2>
+        </div>
+        <div class="stat-card" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #f59e0b;">
+          <span style="color: #64748b; font-size: 0.9rem; font-weight: 600;">قيد التنفيذ</span>
+          <h2 id="publicStatProgress" class="js-stat-progress" style="margin: 10px 0 0; font-size: 2.2rem; color: #f59e0b;">0</h2>
+        </div>
+        <div class="stat-card" style="background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid #10b981;">
+          <span style="color: #64748b; font-size: 0.9rem; font-weight: 600;">طلبات مكتملة</span>
+          <h2 id="publicStatDone" class="js-stat-done" style="margin: 10px 0 0; font-size: 2.2rem; color: #10b981;">0</h2>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم الخدمات الأساسية -->
+    <section id="services">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 data-i18n="servicesTitle">الخدمات الأساسية عبر منصة جسر</h2>
+            <p data-i18n="servicesSub">اختر الخدمة المناسبة، واضغط لملء نموذج الطلب مباشرة.</p>
+          </div>
+        </div>
+
+        <div class="category-tabs" id="categoryTabs"></div>
+        <div class="service-grid" id="serviceGrid"></div>
+
+        <div class="disclaimer-box">
+          <strong data-i18n="disclaimerTitle">⚠️ تنبيه مهم حول الشروط وتوفر الخدمات:</strong>
+          <p data-i18n="disclaimerText">هذه القائمة تمثل الخدمات التي تستقبل المنصة طلبات الاستفسار والتقديم بشأنها، ولا تُعد ضمانًا لتوفر كل خدمة في كل وقت أو قبول أي طلب تلقائيًا إلا بعد المراجعة الرسمية.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم نموذج إرسال الطلب -->
+    <section class="request-section" id="request">
+      <div class="container request-layout">
+        <div class="request-info">
+          <div class="eyebrow request-badge" data-i18n="requestEyebrow">نموذج طلب خدمة</div>
+          <h2 data-i18n="requestTitle">أرسل تفاصيل طلبك،<br>وفريقنا يرتب معك الخطوة القادمة.</h2>
+          <p data-i18n="requestDesc">املأ بيانات التواصل الضرورية فقط. لا ترسل كلمات مرور أو أرقام بطاقات بنكية أو صور جواز سفر في هذا النموذج الأولي.</p>
+          <div class="info-line"><span>✓</span><div data-i18n="info1">يحصل طلبك فورًا على رقم مرجعي فريد يمكنك نسخُه ومتابعته.</div></div>
+          <div class="info-line"><span>✓</span><div data-i18n="info2">يراجع المدير الطلب ويعيّن الموظف المختص للتواصل معك عبر واتساب.</div></div>
+        </div>
+
+        <form class="form-card" id="requestForm">
+          <div class="form-grid">
+            <div class="field">
+              <label for="customerName" data-i18n="nameLabel">الاسم الكامل *</label>
+              <input id="customerName" name="name" required maxlength="100" autocomplete="name" placeholder="الاسم بالكامل">
+            </div>
+            <div class="field">
+              <label for="customerPhone" data-i18n="phoneLabel">رقم واتساب للتواصل *</label>
+              <input id="customerPhone" name="phone" required maxlength="30" autocomplete="tel" dir="ltr" placeholder="+20 100 000 0000">
+            </div>
+            <div class="field">
+              <label for="serviceType" data-i18n="serviceLabel">الخدمة المطلوبة *</label>
+              <select id="serviceType" name="service" required>
+                <option value="" disabled selected>اختر الخدمة المطلوبة</option>
+                <option value="study">القبول الجامعي والدراسة</option>
+                <option value="housing">السكن الطلابي والمعيشة</option>
+                <option value="equivalence">معادلة الشهادات والدبلومات</option>
+                <option value="language">دورات اللغة (روسي / عربي)</option>
+                <option value="flights">تذاكر الطيران والترانزيت</option>
+                <option value="visa">تأشيرات الدخول والدعوات</option>
+                <option value="tourism">البرامج السياحية والثقافية</option>
+                <option value="legal">الاستشارات القانونية والتوثيق</option>
+                <option value="translation">الترجمة المعتمدة للمستندات</option>
+                <option value="trade">تأسيس الشركات والأعمال التجارية</option>
+                <option value="money">استشارات تحويل الأموال والقنوات الرسمية</option>
+                <option value="health">التأمين الصحي والرعاية الطبية</option>
+                <option value="shipping">الشحن الدولي السريع</option>
+                <option value="other">خدمات الاستشارات العامة والأخرى</option>
+              </select> 
+            </div>
+            <div class="field">
+              <label for="direction" data-i18n="directionLabel">اتجاه الخدمة *</label>
+              <select id="direction" name="direction" required>
+                <option value="eg-ru">مصر ← روسيا</option>
+                <option value="ru-eg">روسيا ← مصر</option>
+                <option value="other">دولة أخرى / استفسار عام</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="details" data-i18n="detailsLabel">تفاصيل الطلب أو الاستفسار (اختياري)</label>
+              <textarea id="details" name="details" maxlength="1000" placeholder="اكتب تفاصيل الخدمة المطلوبة بدون إدخال بيانات مالية أو شخصية حساسة"></textarea>
+            </div>
+          </div>
+
+          <div class="form-foot">
+            <button class="btn btn-primary" type="submit" data-i18n="submitRequest">إرسال الطلب الآن</button>
+            <button class="btn btn-outline" type="reset" data-i18n="clearForm">مسح الحقول</button>
+          </div>
+          <div class="fineprint" data-i18n="privacyNote">ملاحظة المرحلة الحالية: تُحفظ البيانات في قاعدة البيانات المحلية (SQLite).</div>
+        </form>
+      </div>
+    </section>
+
+    <!-- قسم متابعة حالة الطلب للعميل -->
+    <section id="track" class="track-section">
+      <div class="container">
+        <div class="track-card">
+          <div class="section-head" style="margin-bottom: 14px;">
+            <div>
+              <h2 data-i18n="trackTitle">متابعة حالة طلبك</h2>
+              <p data-i18n="trackSub">أدخل الرقم المرجعي للطلب لمعرفة حالته الحالية.</p>
+            </div>
+          </div>
+          <form id="trackForm" class="track-form">
+            <input id="trackInput" type="text" dir="ltr" required placeholder="MR-XXXXXX">
+            <button class="btn btn-primary" type="submit" data-i18n="trackBtn">بحث عن الطلب</button>
+          </form>
+          <div id="trackResult" class="track-result hidden"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- صندوق منبثق لعرض رقم الطلب المرجعي للنسخ (تم إضافته هنا) -->
+  <div id="successModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+    <div style="background: #fff; width: 100%; max-width: 450px; padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
+      <h3 style="color: #0f172a; margin-bottom: 8px;">تم إرسال طلبك بنجاح!</h3>
+      <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 20px;">احتفظ برقم طلبك المرجعي أدناه لمتابعة حالته في أي وقت:</p>
+      
+      <div style="background: #f1f5f9; padding: 14px; border-radius: 10px; font-size: 1.4rem; font-weight: bold; color: #1e293b; letter-spacing: 1px; margin-bottom: 20px; border: 1px dashed #cbd5e1;" id="modalOrderId" dir="ltr">
+        MR-000000
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" id="copyOrderIdBtn" class="btn btn-primary" style="flex: 1; justify-content: center;">📋 نسخ رقم الطلب</button>
+        <button type="button" id="closeModalBtn" class="btn btn-outline" style="flex: 1; justify-content: center;">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- لوحة الإدارة -->
+  <section id="admin" class="admin">
+    <div class="container">
+      <div class="admin-banner">🔒 لوحة إدارة الطلبات والإحصائيات الخاصة بمنصة جسر.</div>
+      <div class="section-head">
+        <div>
+          <h2>لوحة الإدارة</h2>
+          <p>إدارة ومتابعة طلبات العملاء.</p>
+        </div>
+        <button class="btn btn-outline" id="backPublic">← العودة لواجهة الموقع</button>
+      </div>
+      <div class="stats" id="statsGrid">
+        <button type="button" class="stat active" data-filter="all"><small>إجمالي الطلبات</small><strong id="statAll" class="js-stat-all">0</strong></button>
+        <button type="button" class="stat" data-filter="new"><small>الطلبات الجديدة</small><strong id="statNew" class="js-stat-new">0</strong></button>
+        <button type="button" class="stat" data-filter="in_progress"><small>قيد التنفيذ</small><strong id="statProgress" class="js-stat-progress">0</strong></button>
+        <button type="button" class="stat" data-filter="completed"><small>المكتملة</small><strong id="statDone" class="js-stat-done">0</strong></button>
+      </div>
+      <div id="requestList" class="request-list"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <strong class="footer-brand">جسر | خدمات مصر وروسيا</strong>
+          <p class="footer-desc">منصة متكاملة لاستقبال ومتابعة طلبات الخدمات بين مصر وروسيا.</p>
+        </div>
+        <div class="org-credits">
+          <div class="credit-item"><span>صاحب المؤسسة:</span><strong>دكتور محمد القصيري</strong></div>
+          <div class="credit-item"><span>مدير المؤسسة:</span><strong>مهندس أحمد أبوإمام</strong></div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
