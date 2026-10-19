@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const serviceSelect = document.getElementById("serviceType");
     const directionSelect = document.getElementById("direction");
     const serviceGrid = document.getElementById("serviceGrid");
-    const adminNav = document.getElementById("adminNav");
     const backPublicBtn = document.getElementById("backPublic");
     const adminSection = document.getElementById("admin");
     const publicView = document.getElementById("publicView") || document.querySelector("main");
@@ -12,161 +11,273 @@ document.addEventListener("DOMContentLoaded", async () => {
     const trackResult = document.getElementById("trackResult");
     const heroStartBtn = document.getElementById("heroStartBtn");
     const navRequestBtn = document.getElementById("navRequestBtn");
+    const langToggleBtn = document.getElementById("langToggle");
 
     // 🔗 رابط جوجل شيت السحابي الخاص بك:
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8Eurs4yZOPws9YLHEIPWmEpYZ_vKyL7Wa7Q2XduMR7EkFKmI_Au7L06hYmoofbtlhuA/exec";
 
-    // 1. القائمة الكاملة للخدمات (شاملة عقود العمل والخدمات الدراسية لقيرغيزستان وبيلاروسيا ورومانيا وأوزبكستان وروسيا)
+    // اللغة الحالية (الافتراضي عربي ويحفظ اختيار الزائر)
+    let currentLang = localStorage.getItem("jusr_lang") || "ar";
+
+    // قاموس الترجمة الكامل (عربي ⇄ إنجليزي)
+    const translations = {
+        ar: {
+            topMessage: "منصة جسر مصر للعالم 🌍 — بوابتك للدراسة وعقود العمل والخدمات الدولية",
+            langBtn: "🌐 English",
+            brandTitle: "جسر مصر للعالم",
+            brandSub: " | خدمات الدراسة وعقود العمل الدولية",
+            navServices: "الخدمات",
+            navRequest: "اطلب خدمة",
+            navTrack: "متابعة طلب",
+            navAdmin: "لوحة الإدارة",
+            requestBtn: "اطلب خدمة",
+            eyebrow: "روسيا • بيلاروسيا • رومانيا • قيرغيزستان • أوزبكستان",
+            heroTitle: "جسر مصر للعالم،<br>مشوارك للدراسة والعمل بالخارج أسهل وأوضح.",
+            heroDesc: "من القبولات الجامعية والخدمات الدراسية إلى عقود العمل الموثقة، التأشيرات، حجز الطيران والسكن في (روسيا، بيلاروسيا، رومانيا، قيرغيزستان، وأوزبكستان) — أرسل طلبك وتابعه خطوة بخطوة مع فريقنا.",
+            startRequest: "ابدأ طلبك الآن ←",
+            browseServices: "استعرض الخدمات الأساسية",
+            trackOrderBtn: "تابع حالة طلبك",
+            egypt: "مصر",
+            world: "العالم",
+            heroNote: "عقود عمل • خدمات دراسية • متابعة بالرقم المرجعي",
+            trust1: "خطوات وشروط واضحة",
+            trust1d: "نوضح لك المتطلبات والإجراءات قبل البدء",
+            trust2: "متابعة فورية للطلب",
+            trust2d: "رقم مرجعي خاص لمتابعة حالة طلبك",
+            trust3: "دعم عربي وإنجليزي",
+            trust3d: "تغطية دولية لروسيا، بيلاروسيا، رومانيا، قيرغيزستان، وأوزبكستان",
+            statsHeading: "📊 مؤشرات إنجاز الطلبات عبر منصة جسر مصر للعالم",
+            statsSub: "تحديث مباشر لحركة الطلبات والخدمات الدراسية وعقود العمل الدولية لحظة بلحظة",
+            statTotalLabel: "إجمالي الطلبات",
+            statNewLabel: "طلبات جديدة",
+            statProgLabel: "قيد التنفيذ",
+            statDoneLabel: "طلبات مكتملة",
+            servicesTitle: "الخدمات الأساسية عبر جسر مصر للعالم",
+            servicesSub: "اختر الخدمة المناسبة (دراسة، عقود عمل، تأشيرات، وغيرها) واضغط لملء نموذج الطلب مباشرة.",
+            availBadge: "متاح للطلب",
+            orderServiceBtn: "اطلب هذه الخدمة",
+            disclaimerTitle: "⚠️ تنبيه مهم حول الشروط وتوفر الخدمات:",
+            disclaimerText: "هذه القائمة تمثل الخدمات التي تستقبل المنصة طلبات الاستفسار والتقديم بشأنها، ولا تُعد ضمانًا لتوفر كل خدمة في كل وقت أو قبول أي طلب تلقائيًا إلا بعد المراجعة الرسمية.",
+            requestEyebrow: "نموذج طلب خدمة دولية",
+            requestTitle: "أرسل تفاصيل طلبك،<br>وفريقنا يرتب معك الخطوة القادمة.",
+            requestDesc: "املأ بيانات التواصل الضرورية واختر الدولة والخدمة المطلوبة. لا ترسل كلمات مرور أو أرقام بطاقات بنكية في هذا النموذج الأولي.",
+            info1: "يحصل طلبك فورًا على رقم مرجعي فريد يمكنك نسخُه ومتابعته.",
+            info2: "يراجع المدير الطلب ويعيّن المختص للتواصل معك عبر واتساب.",
+            nameLabel: "الاسم الكامل *",
+            namePlaceholder: "الاسم بالكامل",
+            phoneLabel: "رقم واتساب للتواصل *",
+            serviceLabel: "الخدمة المطلوبة *",
+            selectServiceDefault: "اختر الخدمة المطلوبة",
+            directionLabel: "الوجهة / الدولة المستهدفة *",
+            detailsLabel: "تفاصيل الطلب أو الاستفسار (اختياري)",
+            detailsPlaceholder: "اكتب التخصص الدراسي المطلوب أو نوع عقد العمل أو أي تفاصيل إضافية...",
+            submitRequest: "إرسال الطلب الآن",
+            clearForm: "مسح الحقول",
+            privacyNote: "تُحفظ الطلبات وتُتابَع بأمان عبر النظام السحابي لمنصة جسر مصر للعالم.",
+            trackTitle: "متابعة حالة طلبك",
+            trackSub: "أدخل الرقم المرجعي للطلب لمعرفة حالته الحالية.",
+            trackBtn: "بحث عن الطلب",
+            modalTitle: "تم إرسال طلبك بنجاح!",
+            modalSub: "احتفظ برقم طلبك المرجعي أدناه لمتابعة حالته في أي وقت:",
+            copyBtn: "📋 نسخ رقم الطلب",
+            copiedBtn: "✅ تم النسخ بنجاح!",
+            closeBtn: "إغلاق",
+            footerBrand: "جسر مصر للعالم 🌍 | خدمات الدراسة وعقود العمل الدولية",
+            footerDesc: "منصة متكاملة لاستقبال ومتابعة طلبات الخدمات الدراسية وعقود العمل والتأشيرات (قيرغيزستان، بيلاروسيا، رومانيا، أوزبكستان، وروسيا).",
+            ownerLabel: "صاحب المؤسسة:",
+            ownerName: "دكتور محمد القصيري",
+            managerLabel: "مدير المؤسسة:",
+            managerName: "مهندس أحمد أبوإمام",
+            mobileAdminBtn: "🔐 الإدارة"
+        },
+        en: {
+            topMessage: "Jusr Egypt to the World 🌍 — Your Gateway to Study, Work Contracts & Global Services",
+            langBtn: "🌐 العربية",
+            brandTitle: "Jusr Egypt to the World",
+            brandSub: " | Study & Global Work Contracts",
+            navServices: "Services",
+            navRequest: "Request Service",
+            navTrack: "Track Order",
+            navAdmin: "Admin Panel",
+            requestBtn: "Request Now",
+            eyebrow: "Russia • Belarus • Romania • Kyrgyzstan • Uzbekistan",
+            heroTitle: "Jusr Egypt to the World,<br>Your Journey to Study & Work Abroad Made Easy.",
+            heroDesc: "From university admissions & educational services to official work contracts, visas, flights, and housing in (Russia, Belarus, Romania, Kyrgyzstan, and Uzbekistan) — Submit and track your request step by step.",
+            startRequest: "Start Your Request →",
+            browseServices: "Explore Services",
+            trackOrderBtn: "Track Your Request",
+            egypt: "Egypt",
+            world: "World",
+            heroNote: "Work Contracts • Study Abroad • Reference Tracking",
+            trust1: "Clear Steps & Terms",
+            trust1d: "We explain all requirements before starting",
+            trust2: "Instant Order Tracking",
+            trust2d: "Unique reference ID to track your request status",
+            trust3: "Arabic & English Support",
+            trust3d: "Covering Russia, Belarus, Romania, Kyrgyzstan & Uzbekistan",
+            statsHeading: "📊 Live Order Metrics — Jusr Egypt to the World",
+            statsSub: "Real-time updates for study services and international work contract requests",
+            statTotalLabel: "Total Requests",
+            statNewLabel: "New Requests",
+            statProgLabel: "In Progress",
+            statDoneLabel: "Completed",
+            servicesTitle: "Core Services via Jusr Platform",
+            servicesSub: "Choose the right service (Study, Work Contracts, Visas, etc.) and click to fill the form directly.",
+            availBadge: "Available",
+            orderServiceBtn: "Request This Service",
+            disclaimerTitle: "⚠️ Important Notice Regarding Terms & Availability:",
+            disclaimerText: "This list represents services open for inquiry and application. Submitting a form does not guarantee automatic acceptance until official review is completed.",
+            requestEyebrow: "International Service Request Form",
+            requestTitle: "Submit Your Request Details,<br>And Our Team Will Arrange the Next Step.",
+            requestDesc: "Fill in your contact details and choose your target country and service. Do not send passwords or bank card numbers in this initial form.",
+            info1: "Your request immediately receives a unique reference number to copy and track.",
+            info2: "Our specialist reviews your request and contacts you directly via WhatsApp.",
+            nameLabel: "Full Name *",
+            namePlaceholder: "Enter your full name",
+            phoneLabel: "WhatsApp Number *",
+            serviceLabel: "Required Service *",
+            selectServiceDefault: "Select Required Service",
+            directionLabel: "Target Country / Destination *",
+            detailsLabel: "Request Details or Inquiry (Optional)",
+            detailsPlaceholder: "Write the desired study major, work contract type, or any additional details...",
+            submitRequest: "Submit Request Now",
+            clearForm: "Clear Fields",
+            privacyNote: "Requests are securely saved and tracked via Jusr Cloud System.",
+            trackTitle: "Track Your Request Status",
+            trackSub: "Enter your order reference number to check its current status.",
+            trackBtn: "Search Request",
+            modalTitle: "Request Submitted Successfully!",
+            modalSub: "Save your reference number below to track your status anytime:",
+            copyBtn: "📋 Copy Reference ID",
+            copiedBtn: "✅ Copied Successfully!",
+            closeBtn: "Close",
+            footerBrand: "Jusr Egypt to the World 🌍 | Study & International Work Services",
+            footerDesc: "Integrated platform for educational services, work contracts, and visas (Kyrgyzstan, Belarus, Romania, Uzbekistan, and Russia).",
+            ownerLabel: "Founder & Owner:",
+            ownerName: "Dr. Mohamed El-Kosairy",
+            managerLabel: "Managing Director:",
+            managerName: "Eng. Ahmed Abo-Emam",
+            mobileAdminBtn: "🔐 Admin"
+        }
+    };
+
+    // قائمة الدول/الاتجاهات باللغتين
+    const directionsList = [
+        { value: "مصر ← قيرغيزستان", ar: "مصر ← قيرغيزستان 🇰🇬", en: "Egypt ➔ Kyrgyzstan 🇰🇬" },
+        { value: "مصر ← بيلاروسيا", ar: "مصر ← بيلاروسيا 🇧🇾", en: "Egypt ➔ Belarus 🇧🇾" },
+        { value: "مصر ← رومانيا", ar: "مصر ← رومانيا 🇷🇴", en: "Egypt ➔ Romania 🇷🇴" },
+        { value: "مصر ← أوزبكستان", ar: "مصر ← أوزبكستان 🇺🇿", en: "Egypt ➔ Uzbekistan 🇺🇿" },
+        { value: "مصر ← روسيا", ar: "مصر ← روسيا 🇷🇺", en: "Egypt ➔ Russia 🇷🇺" },
+        { value: "من الخارج ← مصر", ar: "من الخارج ← مصر 🇪🇬", en: "Abroad ➔ Egypt 🇪🇬" },
+        { value: "دولة أخرى / استفسار عام", ar: "دولة أخرى / استفسار عام 🌍", en: "Other Country / General Inquiry 🌍" }
+    ];
+
+    // 1. القائمة الكاملة للـ 15 خدمة (عربي + إنجليزي)
     const allServices = [
         { 
-            id: "study", 
-            category: "education", 
-            icon: "🎓", 
-            sortOrder: 1, 
+            id: "study", category: "education", icon: "🎓", sortOrder: 1, 
             titleAr: "القبول الجامعي والخدمات الدراسية الدولية", 
-            titleRu: "Учёба", 
+            titleEn: "University Admissions & Study Abroad", 
             descAr: "تأمين القبولات الجامعية والمنح والسنة التحضيرية في (قيرغيزستان، بيلاروسيا، رومانيا، أوزبكستان، وروسيا) بالجامعات المعتمدة.", 
-            descRu: "Поступление." 
+            descEn: "Securing university admissions, scholarships, and preparatory year in Kyrgyzstan, Belarus, Romania, Uzbekistan, and Russia." 
         },
         { 
-            id: "work", 
-            category: "business", 
-            icon: "👷‍♂️", 
-            sortOrder: 2, 
+            id: "work", category: "business", icon: "👷‍♂️", sortOrder: 2, 
             titleAr: "عقود العمل والتوظيف الخارجي", 
-            titleRu: "Рабочие контракты", 
+            titleEn: "Work Contracts & Overseas Employment", 
             descAr: "توفير عقود عمل موثقة ورسمية وفرص توظيف في (قيرغيزستان، بيلاروسيا، رومانيا، أوزبكستان، وروسيا) مع إنهاء كافة الإجراءات.", 
-            descRu: "Работа." 
+            descEn: "Providing official verified work contracts and job opportunities in Kyrgyzstan, Belarus, Romania, Uzbekistan, and Russia." 
         },
         { 
-            id: "visa", 
-            category: "travel", 
-            icon: "🛂", 
-            sortOrder: 3, 
+            id: "visa", category: "travel", icon: "🛂", sortOrder: 3, 
             titleAr: "تأشيرات الدخول والدعوات الرسمية", 
-            titleRu: "Визы", 
+            titleEn: "Entry Visas & Official Invitations", 
             descAr: "استخراج الدعوات الدراسية ودعوات العمل والسياحة وتخليص إجراءات التأشيرات لجميع الدول المستهدفة.", 
-            descRu: "Виза." 
+            descEn: "Issuing study, work, and tourist invitations and completing visa procedures for all target countries." 
         },
         { 
-            id: "housing", 
-            category: "living", 
-            icon: "🏠", 
-            sortOrder: 4, 
+            id: "housing", category: "living", icon: "🏠", sortOrder: 4, 
             titleAr: "السكن الطلابي والمعيشة والاستقبال", 
-            titleRu: "Жилье", 
+            titleEn: "Student Housing, Airport Pickup & Living", 
             descAr: "توفير السكن الجامعي أو الخاص وترتيب استقبال المطار وإنهاء إجراءات الإقامة فور الوصول.", 
-            descRu: "Общежитие." 
+            descEn: "Arranging university dorms or private accommodation, airport pickup, and residency registration upon arrival." 
         },
         { 
-            id: "equivalence", 
-            category: "education", 
-            icon: "📜", 
-            sortOrder: 5, 
+            id: "equivalence", category: "education", icon: "📜", sortOrder: 5, 
             titleAr: "معادلة الشهادات والدبلومات", 
-            titleRu: "Нострификация", 
+            titleEn: "Certificate & Diploma Equivalence", 
             descAr: "إجراءات توثيق ومعادلة الشهادات الدراسية والجامعية بين مصر ومختلف الدول.", 
-            descRu: "Диплом." 
+            descEn: "Authentication and equivalence procedures for academic and university certificates internationally." 
         },
         { 
-            id: "language", 
-            category: "education", 
-            icon: "🗣️", 
-            sortOrder: 6, 
+            id: "language", category: "education", icon: "🗣️", sortOrder: 6, 
             titleAr: "دورات اللغات والتأهيل الدولي", 
-            titleRu: "Языковые курсы", 
+            titleEn: "Language Courses & International Prep", 
             descAr: "كورسات مكثفة لتأهيل الطلاب والمسافرين للعمل والدراسة بالخارج لغوياً.", 
-            descRu: "Язык." 
+            descEn: "Intensive language courses to prepare students and travelers for studying and working abroad." 
         },
         { 
-            id: "flights", 
-            category: "travel", 
-            icon: "✈️", 
-            sortOrder: 7, 
+            id: "flights", category: "travel", icon: "✈️", sortOrder: 7, 
             titleAr: "تذاكر الطيران والترانزيت", 
-            titleRu: "Авиабилеты", 
+            titleEn: "Flight Tickets & Transit Booking", 
             descAr: "حجز أفضل خطوط الطيران المباشر والترانزيت بأفضل الأسعار لجميع الوجهات الدولية.", 
-            descRu: "Билеты." 
+            descEn: "Booking the best direct and transit flights at competitive prices to all international destinations." 
         },
         { 
-            id: "tourism", 
-            category: "travel", 
-            icon: "🏛️", 
-            sortOrder: 8, 
+            id: "tourism", category: "travel", icon: "🏛️", sortOrder: 8, 
             titleAr: "البرامج السياحية والثقافية", 
-            titleRu: "Туризм", 
+            titleEn: "Tourism & Cultural Programs", 
             descAr: "رحلات سياحية وبرامج استكشافية متكاملة بين مصر ومختلف العواصم والمدن العالمية.", 
-            descRu: "Туризм." 
+            descEn: "Comprehensive tourist trips and exploratory programs between Egypt and international capitals." 
         },
         { 
-            id: "legal", 
-            category: "business", 
-            icon: "⚖️", 
-            sortOrder: 9, 
+            id: "legal", category: "business", icon: "⚖️", sortOrder: 9, 
             titleAr: "الاستشارات القانونية وتوثيق العقود", 
-            titleRu: "Юристы", 
+            titleEn: "Legal Consultations & Document Attestation", 
             descAr: "توثيق عقود العمل والدراسة والمستندات الرسمية والتخليص القانوني.", 
-            descRu: "Юрист." 
+            descEn: "Notarizing work/study contracts, official documents, and providing legal clearance." 
         },
         { 
-            id: "translation", 
-            category: "business", 
-            icon: "📝", 
-            sortOrder: 10, 
+            id: "translation", category: "business", icon: "📝", sortOrder: 10, 
             titleAr: "الترجمة المعتمدة للمستندات", 
-            titleRu: "Перевод", 
+            titleEn: "Certified Document Translation", 
             descAr: "ترجمة رسمية معتمدة للشهادات والأوراق الرسمية للسفارات والجهات الحكومية.", 
-            descRu: "Перевод." 
+            descEn: "Official certified translation for certificates, passports, and documents for embassies and universities." 
         },
         { 
-            id: "trade", 
-            category: "business", 
-            icon: "💼", 
-            sortOrder: 11, 
+            id: "trade", category: "business", icon: "💼", sortOrder: 11, 
             titleAr: "تأسيس الشركات والأعمال التجارية", 
-            titleRu: "Бизнес", 
+            titleEn: "Company Formation & Business Setup", 
             descAr: "استشارات الاستثمار وتأسيس الشركات وربط الأسواق التجارية الدولية.", 
-            descRu: "Бизнес." 
+            descEn: "Investment consulting, company registration, and connecting international trade markets." 
         },
         { 
-            id: "money", 
-            category: "general", 
-            icon: "💳", 
-            sortOrder: 12, 
+            id: "money", category: "general", icon: "💳", sortOrder: 12, 
             titleAr: "استشارات تحويل الأموال والقنوات الرسمية", 
-            titleRu: "Переводы", 
+            titleEn: "Official Money Transfer Consultations", 
             descAr: "توضيح القنوات الرسمية والآمنة للتحويل المالي وسداد المصروفات بالخارج.", 
-            descRu: "Финансы." 
+            descEn: "Guidance on safe, official channels for tuition payment and international money transfers." 
         },
         { 
-            id: "health", 
-            category: "general", 
-            icon: "🏥", 
-            sortOrder: 13, 
+            id: "health", category: "general", icon: "🏥", sortOrder: 13, 
             titleAr: "التأمين الصحي والرعاية الطبية", 
-            titleRu: "Медицина", 
+            titleEn: "Health Insurance & Medical Care", 
             descAr: "ترتيب التأمين الصحي الدولي والمتابعة الطبية للطلاب والعاملين بالخارج.", 
-            descRu: "Медицина." 
+            descEn: "Issuing international medical insurance and healthcare follow-up for students and workers abroad." 
         },
         { 
-            id: "shipping", 
-            category: "general", 
-            icon: "📦", 
-            sortOrder: 14, 
+            id: "shipping", category: "general", icon: "📦", sortOrder: 14, 
             titleAr: "الشحن الدولي السريع", 
-            titleRu: "Доставка", 
+            titleEn: "Express International Shipping", 
             descAr: "خدمات شحن الطرود والأوراق والمستندات الشخصية والتجارية بسرعة وأمان.", 
-            descRu: "Доставка." 
+            descEn: "Fast and secure international shipping for original documents, personal packages, and commercial parcels." 
         },
         { 
-            id: "other", 
-            category: "general", 
-            icon: "🤝", 
-            sortOrder: 15, 
+            id: "other", category: "general", icon: "🤝", sortOrder: 15, 
             titleAr: "خدمات الاستشارات العامة والأخرى", 
-            titleRu: "Другие", 
+            titleEn: "General Consultations & Custom Services", 
             descAr: "استشارات مخصصة وحلول شاملة لكافة استفسارات السفر والدراسة والعمل بالخارج.", 
-            descRu: "Общие." 
+            descEn: "Tailored consultations and complete solutions for all travel, study, and work inquiries abroad." 
         }
     ];
 
@@ -178,19 +289,105 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function getStatusLabel(status) {
         const s = String(status || '').toLowerCase().trim();
-        const labels = {
-            'new': 'جديد',
-            'in_progress': 'قيد التنفيذ',
-            'inprogress': 'قيد التنفيذ',
-            'completed': 'مكتمل',
-            'rejected': 'مرفوض'
-        };
-        return labels[s] || status;
+        if (currentLang === "en") {
+            const labelsEn = { 'new': 'New', 'in_progress': 'In Progress', 'inprogress': 'In Progress', 'completed': 'Completed', 'rejected': 'Rejected' };
+            return labelsEn[s] || status;
+        }
+        const labelsAr = { 'new': 'جديد', 'in_progress': 'قيد التنفيذ', 'inprogress': 'قيد التنفيذ', 'completed': 'مكتمل', 'rejected': 'مرفوض' };
+        return labelsAr[s] || status;
     }
 
     function getServiceTitle(serviceId) {
         const found = allServices.find(s => s.id === serviceId);
-        return found ? found.titleAr : serviceId;
+        if (!found) return serviceId;
+        return currentLang === "en" ? found.titleEn : found.titleAr;
+    }
+
+    // دالة بناء كروت الخدمات والقوائم المنسدلة حسب اللغة الحالية
+    function renderServicesAndSelects() {
+        const t = translations[currentLang];
+
+        if (serviceSelect) {
+            const prevVal = serviceSelect.value;
+            serviceSelect.innerHTML = `<option value="" disabled selected>${t.selectServiceDefault}</option>`;
+            allServices.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s.id;
+                opt.textContent = currentLang === "en" ? s.titleEn : s.titleAr;
+                serviceSelect.appendChild(opt);
+            });
+            if (prevVal) serviceSelect.value = prevVal;
+        }
+
+        if (directionSelect) {
+            const prevDir = directionSelect.value;
+            directionSelect.innerHTML = "";
+            directionsList.forEach(d => {
+                const opt = document.createElement("option");
+                opt.value = d.value;
+                opt.textContent = currentLang === "en" ? d.en : d.ar;
+                directionSelect.appendChild(opt);
+            });
+            if (prevDir) directionSelect.value = prevDir;
+        }
+
+        if (serviceGrid) {
+            serviceGrid.innerHTML = "";
+            allServices.forEach(s => {
+                const card = document.createElement("div");
+                card.className = "service";
+                const title = currentLang === "en" ? s.titleEn : s.titleAr;
+                const desc = currentLang === "en" ? s.descEn : s.descAr;
+                card.innerHTML = `
+                    <div class="service-top">
+                        <div class="emoji">${s.icon || '📌'}</div>
+                        <span class="avail-badge">${t.availBadge}</span>
+                    </div>
+                    <h3>${title}</h3>
+                    <p>${desc}</p>
+                    <button class="btn btn-outline" type="button" onclick="selectServiceForRequest('${s.id}')">${t.orderServiceBtn}</button>
+                `;
+                serviceGrid.appendChild(card);
+            });
+        }
+    }
+
+    // دالة تطبيق اللغة على كل الموقع
+    function applyLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem("jusr_lang", lang);
+        const t = translations[lang];
+
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === "en" ? "ltr" : "rtl";
+
+        document.querySelectorAll("[data-i18n]").forEach(el => {
+            const key = el.getAttribute("data-i18n");
+            if (t[key]) {
+                if (key === "heroTitle" || key === "requestTitle") {
+                    el.innerHTML = t[key];
+                } else {
+                    el.textContent = t[key];
+                }
+            }
+        });
+
+        if (langToggleBtn) langToggleBtn.textContent = t.langBtn;
+
+        const nameInput = document.getElementById("customerName");
+        const detailsInput = document.getElementById("details");
+        if (nameInput) nameInput.placeholder = t.namePlaceholder;
+        if (detailsInput) detailsInput.placeholder = t.detailsPlaceholder;
+
+        if (mobileAdminBtn) mobileAdminBtn.innerHTML = t.mobileAdminBtn;
+
+        renderServicesAndSelects();
+    }
+
+    if (langToggleBtn) {
+        langToggleBtn.addEventListener("click", () => {
+            applyLanguage(currentLang === "ar" ? "en" : "ar");
+        });
     }
 
     async function syncFromGoogleSheets() {
@@ -244,9 +441,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         copyOrderIdBtn.addEventListener("click", () => {
             const orderIdText = document.getElementById("modalOrderId").textContent;
             navigator.clipboard.writeText(orderIdText).then(() => {
-                copyOrderIdBtn.textContent = "✅ تم النسخ بنجاح!";
+                copyOrderIdBtn.textContent = translations[currentLang].copiedBtn;
                 setTimeout(() => {
-                    copyOrderIdBtn.textContent = "📋 نسخ رقم الطلب";
+                    copyOrderIdBtn.textContent = translations[currentLang].copyBtn;
                 }, 2000);
             });
         });
@@ -260,34 +457,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    if (serviceSelect) {
-        serviceSelect.innerHTML = '<option value="" disabled selected>اختر الخدمة المطلوبة</option>';
-        allServices.forEach(s => {
-            const opt = document.createElement("option");
-            opt.value = s.id;
-            opt.textContent = s.titleAr;
-            serviceSelect.appendChild(opt);
-        });
-    }
+    // زر عائم للإدارة على الموبايل
+    const mobileAdminBtn = document.createElement("button");
+    mobileAdminBtn.style.cssText = "position:fixed; bottom:18px; left:18px; z-index:9999; background:#0f2942; color:#fff; border:none; border-radius:50px; padding:10px 16px; font-family:inherit; font-size:13px; font-weight:bold; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;";
+    document.body.appendChild(mobileAdminBtn);
 
-    if (serviceGrid) {
-        serviceGrid.innerHTML = "";
-        allServices.forEach(s => {
-            const card = document.createElement("div");
-            card.className = "service";
-            card.innerHTML = `
-                <div class="service-top">
-                    <div class="emoji">${s.icon || '📌'}</div>
-                    <span class="avail-badge">متاح للطلب</span>
-                </div>
-                <h3>${s.titleAr}</h3>
-                <p>${s.descAr}</p>
-                <button class="btn btn-outline" type="button" onclick="selectServiceForRequest('${s.id}')">اطلب هذه الخدمة</button>
-            `;
-            serviceGrid.appendChild(card);
-        });
-    }
-
+    // تهيئة اللغة والخدمات عند فتح الموقع
+    applyLanguage(currentLang);
     refreshCounters();
     await syncFromGoogleSheets();
 
@@ -318,13 +494,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             };
 
             if (!formData.service) {
-                alert("❌ برجاء اختيار الخدمة المطلوبة.");
+                alert(currentLang === "en" ? "❌ Please select the required service." : "❌ برجاء اختيار الخدمة المطلوبة.");
                 return;
             }
 
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.textContent = "⏳ جاري إرسال الطلب للسحابة...";
+                submitBtn.textContent = currentLang === "en" ? "⏳ Sending Request..." : "⏳ جاري إرسال الطلب للسحابة...";
             }
 
             const newOrderId = "MR-" + Date.now().toString().slice(-6);
@@ -352,7 +528,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     body: JSON.stringify(newRequest)
                 });
             } catch (err) {
-                console.error("خطأ في الإرسال للسحابة:", err);
+                console.error("Cloud sync error:", err);
             }
 
             if (submitBtn) {
@@ -369,7 +545,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
                 successModal.style.display = "flex";
             } else {
-                alert(`✅ تم إرسال الطلب بنجاح!\nرقم الطلب: ${newOrderId}`);
+                alert(`✅ ${ newOrderId }`);
             }
         });
     }
@@ -383,16 +559,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             trackResult.classList.remove("hidden");
             trackResult.style.display = "block";
-            trackResult.innerHTML = "⏳ جاري البحث عن حالة الطلب...";
+            trackResult.innerHTML = currentLang === "en" ? "⏳ Searching for request status..." : "⏳ جاري البحث عن حالة الطلب...";
 
             await syncFromGoogleSheets();
 
             const found = adminRequestsList.find(r => String(r.id).toUpperCase() === orderId);
 
             if (found) {
-                trackResult.innerHTML = `📋 حالة الطلب <b>${found.id}</b>: <span class="status-badge status-${found.status}">${getStatusLabel(found.status)}</span><br><b>الاسم:</b> ${found.customerName}<br><b>الخدمة:</b> ${getServiceTitle(found.serviceId)}<br><b>الوجهة:</b> ${found.direction}<br><b>التاريخ:</b> ${found.createdAt}`;
+                if (currentLang === "en") {
+                    trackResult.innerHTML = `📋 Order Status <b>${found.id}</b>: <span class="status-badge status-${found.status}">${getStatusLabel(found.status)}</span><br><b>Name:</b> ${found.customerName}<br><b>Service:</b> ${getServiceTitle(found.serviceId)}<br><b>Destination:</b> ${found.direction}<br><b>Date:</b> ${found.createdAt}`;
+                } else {
+                    trackResult.innerHTML = `📋 حالة الطلب <b>${found.id}</b>: <span class="status-badge status-${found.status}">${getStatusLabel(found.status)}</span><br><b>الاسم:</b> ${found.customerName}<br><b>الخدمة:</b> ${getServiceTitle(found.serviceId)}<br><b>الوجهة:</b> ${found.direction}<br><b>التاريخ:</b> ${found.createdAt}`;
+                }
             } else {
-                trackResult.innerHTML = `<span style="color:red; font-weight:bold;">❌ الطلب غير موجود</span>`;
+                trackResult.innerHTML = currentLang === "en"
+                    ? `<span style="color:red; font-weight:bold;">❌ Request not found. Please check your reference ID.</span>`
+                    : `<span style="color:red; font-weight:bold;">❌ الطلب غير موجود</span>`;
             }
         });
     }
@@ -434,13 +616,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.querySelectorAll("#adminNav, a[href='#admin'], .admin-link").forEach(btn => {
         btn.addEventListener("click", triggerAdminLogin);
     });
-
-    // زر عائم للإدارة على الموبايل
-    const mobileAdminBtn = document.createElement("button");
-    mobileAdminBtn.innerHTML = "🔐 الإدارة";
-    mobileAdminBtn.style.cssText = "position:fixed; bottom:18px; left:18px; z-index:9999; background:#0f2942; color:#fff; border:none; border-radius:50px; padding:10px 16px; font-family:inherit; font-size:13px; font-weight:bold; box-shadow:0 4px 14px rgba(0,0,0,0.25); cursor:pointer;";
     mobileAdminBtn.addEventListener("click", triggerAdminLogin);
-    document.body.appendChild(mobileAdminBtn);
 
     if (backPublicBtn) {
         backPublicBtn.addEventListener("click", () => {
@@ -516,7 +692,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 body: JSON.stringify({ action: "updateStatus", id: id, status: newStatus })
             });
         } catch (err) {
-            console.error("خطأ في تحديث الحالة على السحابة:", err);
+            console.error("Cloud status update error:", err);
         }
     };
 });
